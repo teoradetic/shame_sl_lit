@@ -110,9 +110,9 @@ if 'publ_year_clean' in df.columns:
     # a) num documents per year
     docs_by_year = df.groupby('publ_year_clean').size()
     st.subheader("Number of Documents by Year")
-    st.bar_chart(docs_by_year)
+    st.bar_chart(docs_by_year, x_label="Publishing year", y_label="Num documents")
     # b) num words per year
     if 'word_count' in df.columns:
         words_by_year = df.groupby('publ_year_clean')['word_count'].sum()
         st.subheader("Number of Words by Year")
-        st.bar_chart(words_by_year)
+        st.bar_chart(words_by_year, x_label="Publishing year", y_label="Num words")

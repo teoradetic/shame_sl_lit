@@ -54,7 +54,7 @@ with st.expander("Show detailed explanation of the pipeline (click to expand)"):
 
 st.header("2. Evaluate word embedding quality")
 st.text("GOAL: Find best configuration for FastText model to be used in corpus \
-        annotation.")
+annotation.")
 
 st.subheader("2.1 Embedding stability across epochs")
 st.markdown("""
@@ -227,7 +227,9 @@ Conclusion:
 )
 
 # ─── Annotated text ─────────────────────────────────────────────────
-st.header("3. Find most similar texts")
+st.header("3. Find shame-related texts in corpus")
+st.text("GOAL: USe FastText embedding to annotate which paragraph is shame related.")
+
 st.subheader("3.0 Target shame vector")
 st.subheader("3.1 Method: N most similar (cosine) paragraphs")
 st.subheader("3.2 Method: kMeans clustering")
