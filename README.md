@@ -12,15 +12,16 @@ We aim to develop tools for:
 
 ## Repository Structure
 
+- `annotations/` – annotated corpus for NLP tasks downstream
 - `data/` – input corpus
-    - `original_txt_corpus` - original novels (no processing), split into two folders: `paragraph` and `sentence` - they indicate the granularity of each line within a txt doc.
-    - `lemma_txt_corpus` - lemmatized novels, split into two folders: `paragraph` and `sentence` - they indicate the granularity of each line within a txt doc.
+    - `original_txt_corpus` - original novels (no processing), split into two folders: `paragraph` and `sentence` - they indicate the granularity of each line within a txt doc
+    - `lemma_txt_corpus` - lemmatized novels, split into two folders: `paragraph` and `sentence` - they indicate the granularity of each line within a txt doc
     - `raw_corpora` - 4 folders with the corpora used to generate this corpus (Wikivir, KDSP, PriLit, ELTeC)
 - `helpers/` – scripts to help data processing (data fetching, extracting, cleaning, preparing for NLP tasks, ...)
 - `models/` – FastText and other trained embeddings
 - `notebooks/` – Jupyter notebooks for analysis
 - `streamlit_app/` – Streamlit app for data analysis and presentation
-- `output` - useful deliverables (charts, similar words, ...)
+- `output` - useful deliverables (charts, similar words, ...) to be used locally
 - `README.md` – This file
 - `requirements.txt` – Python dependencies
 - `setup.py` - run this script to download all the data to your local dir with the structure specified in .env
