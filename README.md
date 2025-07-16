@@ -25,27 +25,6 @@ We aim to develop tools for:
 - `requirements.txt` – Python dependencies
 - `setup.py` - run this script to download all the data to your local dir with the structure specified in .env
 
-## Progress
-
-✅ Corpus metadata defined  
-✅ Extraction helpers implemented  
-✅ Initial FastText model trained  
-
-## Tasks in Progress
-
-- [ ] Clean and segment texts (sentence/paragraph level)
-- [ ] Extract lemmatized texts
-- [ ] Train 50+ variations of embeddings
-- [ ] Retrain kontext.io and FastText on lemmas
-- [ ] Remove stopwords and retrain
-- [ ] Apply community detection to embedding graphs
-- [ ] Compare with BabelNet for semantic similarity
-- [ ] Temporal/author analysis of embedding shifts
-- [ ] Experiment with sentence embeddings (e.g. SBERT)
-- [ ] Annotate shame with LLMs
-- [ ] Test LemmaGen3
-- [ ] Share repository/resources
-- [ ] Deploy Streamlit demo
 
 ## Running Locally
 
