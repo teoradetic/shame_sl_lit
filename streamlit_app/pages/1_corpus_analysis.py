@@ -24,7 +24,7 @@ st.subheader("2. Corpus Preview")
 st.dataframe(df, hide_index=True)
 
 # --- 1. Table: Group by source_corpus ---
-st.header("3. Overview by Source Corpus")
+st.subheader("3. Overview by Source Corpus")
 if 'source_corpus' in df.columns and 'word_count' in df.columns:
     group1 = df.groupby('source_corpus').agg(
         num_docs=('source_corpus', 'count'),
@@ -58,7 +58,7 @@ if 'source_corpus' in df.columns and 'word_count' in df.columns:
 
 
 # --- 2. Table: Group by author_gender ---
-st.header("4. Overview by Author Gender")
+st.subheader("4. Overview by Author Gender")
 if 'author_gender' in df.columns and 'word_count' in df.columns:
     # Number of unique authors per gender
     if 'author' in df.columns:
@@ -105,14 +105,14 @@ if 'author_gender' in df.columns and 'word_count' in df.columns:
                             })
 
 # --- 3. Charts: Bar charts by publ_year_clean ---
-st.header("5. Publishing Time Analysis")
+st.subheader("5. Publishing Time Analysis")
 if 'publ_year_clean' in df.columns:
     # a) num documents per year
     docs_by_year = df.groupby('publ_year_clean').size()
-    st.subheader("Number of Documents by Year")
+    st.markdown("##### Number of Documents by Year")
     st.bar_chart(docs_by_year, x_label="Publishing year", y_label="Num documents")
     # b) num words per year
     if 'word_count' in df.columns:
         words_by_year = df.groupby('publ_year_clean')['word_count'].sum()
-        st.subheader("Number of Words by Year")
+        st.markdown("##### Number of Words by Year")
         st.bar_chart(words_by_year, x_label="Publishing year", y_label="Num words")
