@@ -3,12 +3,18 @@ import streamlit as st
 st.title("Welcome to the `Shapes of Shame in Slovene literature` Analysis App")
 st.markdown("""
 Use the sidebar to the left to navigate between pages:
-- Start with _Corpus Analysis_ to get a feel for the novels in this corpus.
-- _Word Embeddings_ showcases how FastText was trained, evaluated, and used \
-to tag paragraphs in the corpus as shame related (or not).
-- _Sentence Embeddings_ - TBD
-- _LLM few shot annotations - TBD
-            
+""")
+st.page_link("pages/1_corpus_analysis.py", 
+             label=":one: :blue[**Corpus Analysis**] - Start with this page to get a feel for the novels in this corpus.")
+st.page_link("pages/2_word_embeddings_evaluations.py", 
+             label=":two: :blue[**Word Embeddings Evaluation**] - Showcases how FastText was trained and evaluated.")
+st.page_link("pages/3_word_embeddings_annotations.py", 
+             label=":three: :blue[**Word Embeddings Annotations**] - How the FastText model was used to annotate the corpus.")
+st.page_link("pages/4_LLM_few_shot_annotations.py", 
+             label=":four: :blue[**LLM few shot annotations**] - TBD")
+
+st.divider()
+st.markdown("""            
 Other important assets:
 - All code is open source and can be found on \
 [GitHub](https://github.com/teoradetic/shame_sl_lit).

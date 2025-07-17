@@ -4,9 +4,10 @@ import pandas as pd
 import streamlit as st
 
 # ─── Intro ─────────────────────────────────────────────────
-st.title("Word embeddings")
+st.title("Word embeddings evaluation")
 st.markdown("""
 **GOAL**: Use word embeddings models (FastText) to automatically identify shame.
+This notebook shows how the model was trained and how its best version was picked.
 """)
 
 st.header("1. How does it work")
@@ -41,12 +42,7 @@ with st.expander("Show detailed explanation of the pipeline (click to expand)"):
             - Overall Jaccard similarity is computed as the average of current \
                 vs previous batch.
         2. Manual inspection of most similar words to seed words.
-        3. Final result: Choose most stable model for future steps.
-    6. **Annotate corpus** - find most similar paragraphs to the shame vector.
-        - Shame vector:
-        - kMeans:
-        - kNN:
-        - Community detection
+    6. **Final result**: Choose most stable model for future steps.
                 
     """)
 
@@ -223,98 +219,7 @@ Conclusion:
 - Unclear whether the model can be a good predictor of semantically similar words \
 (therefore check ch. 3 below).
 
-"""
-)
-
-# ─── Annotated text ─────────────────────────────────────────────────
-st.header("3. Find shame-related texts in corpus")
-st.text("GOAL: USe FastText embedding to annotate which paragraph is shame related.")
-
-st.subheader("3.1 Method: N most similar (cosine) paragraphs")
-st.markdown("""
-Pipeline:
-1. Use FastText model (300 ep, original text, stop words removed) to tu vectorize \
-each paragraph in the corpus.
-2. Compute a "shame vector" - use seed words and turn them into a vector.
-3. Measure the (cosine) distance between the paragraph vector and the shame vector.
-            
-Details: 3 different sets of shame vectors were used:
-1. Stem words vector - words in the corpus that had the stem "sram" in them and \
-appeared more than 50 times.
-2. Babel vector - words that are most similar to "sram" according to [BabelNet](https://babelnet.org/)
-3. kontekst.io vector - ords that are most similar to "sram" according to [kontekst.io](https://www.kontekst.io/)
-""")
-
-# --- LOAD NESTED ANNOTATIONS ---
-with open("annotations/main_shame_annotations.json", "r", encoding="utf-8") as f:
-    annotations = json.load(f)
-
-# --- GET SHAME VECTORS ---
-sample_doc = next(iter(annotations.values()))
-sample_para = next(iter(sample_doc["paragraphs"].values()))
-shame_vectors = [k.replace("cos_sim_", "") for k in sample_para.keys() if k.startswith("cos_sim_")]
-
-# --- FLATTEN FOR DATAFRAME ---
-flat_records = []
-for doc_id, doc_info in annotations.items():
-    author = doc_info.get("author", "")
-    title = doc_info.get("title", "")
-    for para_id, para_info in doc_info["paragraphs"].items():
-        for vec in shame_vectors:
-            sim = para_info.get(f"cos_sim_{vec}", None)
-            if sim is not None:
-                flat_records.append({
-                    "shame_id": doc_id,
-                    "author": author,
-                    "title": title,
-                    #"paragraph_id": para_id, #uncomment if needed
-                    "paragraph_text": para_info["text"],
-                    f"similarity_{vec}": sim,
-                    "shame_vector": vec  # For easier filtering
-                })
-
-df = pd.DataFrame(flat_records)
-
-# --- PICKERS IN SAME ROW ---
-col1, col2 = st.columns(2)
-with col1:
-    vec_choice = st.selectbox("Shame vector", shame_vectors)
-with col2:
-    topN = st.number_input("Top N", min_value=1, value=50)
-
-# --- FILTERS FOR AUTHOR/TITLE ---
-authors = ["All"] + sorted(df["author"].dropna().unique())
-titles = ["All"] + sorted(df["title"].dropna().unique())
-
-col3, col4 = st.columns(2)
-with col3:
-    author_choice = st.selectbox("Filter by author", authors)
-with col4:
-    title_choice = st.selectbox("Filter by title", titles)
-
-# --- FILTER DATAFRAME ---
-display_df = df[df["shame_vector"] == vec_choice]
-
-if author_choice != "All":
-    display_df = display_df[display_df["author"] == author_choice]
-if title_choice != "All":
-    display_df = display_df[display_df["title"] == title_choice]
-
-# --- SORT AND SHOW ---
-display_df = display_df.sort_values(f"similarity_{vec_choice}", ascending=False)
-display_df = display_df[["shame_id", "author", "title", #"paragraph_id", 
-                         "paragraph_text", f"similarity_{vec_choice}"]]
-st.dataframe(display_df.head(topN), 
-             hide_index=True,
-             )
-
-st.markdown("""
-Usefulness: A quick manual inspection shows that the model captured the shame \
-context surprisingly well. Setting up stem_sram and a minimum similarity \
-threshold of 0.612 (or equivalently, picking the top 1000 entries) gives \
-relatively good paragraphs.
-""")
-
-st.subheader("3.2 Method: kMeans clustering")
-st.subheader("3.3 Method: kNN neighbors")
-st.subheader("3.4 Method: Community detection")
+#### Next steps
+Use the chosen model to annotate the corpus and evaluate the quality of annotations.
+To see the annotations, check: """)
+st.page_link("pages/3_word_embeddings_annotations.py", label=":blue[_Word Embeddings Annotations_]")
