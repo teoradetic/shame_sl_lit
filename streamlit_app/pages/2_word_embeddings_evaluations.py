@@ -10,17 +10,17 @@ st.markdown("""
 This notebook shows how the model was trained and how its best version was picked.
 """)
 
-st.header("1. How does it work")
+st.header("1. Methodological overview")
 with st.expander("Show detailed explanation of the pipeline (click to expand)"):
     st.markdown("""
-    1. **Data Ingestion**: All .txt files in a corpus directory are loaded, \
-                split by sentence or paragraph, and tokenized.
+    1. **Data Ingestion**: All .txt files in the corpus directory are loaded, \
+                split by sentence or paragraph, then tokenized.
     2. **Preprocessing Options**:
         - Text can be _lemmatized_ (root forms) or kept as original.
         - Stop words (common words like "in", "ali") can be removed or kept.
         - Granularity can be sentence or paragraph.
     3. **Seed Word Extraction**: 
-        - Look for all words with the “sram” stem (Slovene for shame) and keeps \
+        - Look for all words with the “sram” stem (Slovene for shame) and keep \
                 those occurring at least 50 times in the corpus.
         - Seed word list: ['sram', 'sramota', 'sramovati', 'sramoten', \
                 'sramezljivo', 'osramocen', 'sramezljivost', 'sramezljiv', \
@@ -41,9 +41,12 @@ with st.expander("Show detailed explanation of the pipeline (click to expand)"):
                 appear in both the previous and current batch vs just one of them.
             - Overall Jaccard similarity is computed as the average of current \
                 vs previous batch.
+            - When Jaccard similarity plateaus, the embedding is stable.
         2. Manual inspection of most similar words to seed words.
     6. **Final result**: Choose most stable model for future steps.
-                
+    
+    For full implementation details, check [2_word_embeddings_training.ipynb](https://github.com/teoradetic/shame_sl_lit/blob/main/notebooks/2_word_embeddings_training.ipynb)\
+     on GitHub
     """)
 
 # ─── Embedding stability ─────────────────────────────────────────────────
@@ -68,7 +71,7 @@ st.markdown("""
 ##### Embedding stability across epochs chart
 **What does this chart show?**
 - Each line is a different embedding model configuration (lemmatized vs. original, \
-            sentence vs. paragraph, stopwords kept/removed).
+            sentence vs. paragraph, stopwords kept vs. removed).
 - Higher **mean Jaccard similarity** means the words that a model outputs as most \
             similar to the seed keywords are mostly shared with the previous model \
             output.
@@ -117,6 +120,8 @@ ax.set_title("Embedding Stability Across Epochs")
 ax.set_ylim(0, 1)
 ax.legend()
 st.pyplot(fig)
+
+st.text("Comment: Irrespective of configuration choices, the models reach stability after cca 100 epochs.")
 
 st.subheader("2.2 Model's predicted nearest words to target seed word")
 st.markdown("""
@@ -183,6 +188,8 @@ def jaccard_matrix(neighbors_by_epoch, seed_word):
             matrix.iloc[i, j] = jac
     return matrix
 
+st.text("Comment: The models mostly predict words with the stem 'sram' in them.")
+
 # Usage in Streamlit:
 matrix = jaccard_matrix(neighbors_by_epoch, selected_seed)
 st.markdown(f"""#### Jaccard similarity matrix for seed word '{selected_seed}' \
@@ -199,8 +206,8 @@ What can we infer from the data above about the optimal FastText model configura
 1. **The model stabilizes early**: Jaccard similarity plateaus after ~100 epochs \
 (cf. 2.1), indicating the model’s word neighborhoods stabilize quickly. There're \
 _diminishing returns in training after ~100 epochs_.
-- Confirmed with Jaccard matrix - after 100, the diagonal values are higher, \
-showing more robust embeddings.
+    - Confirmed with Jaccard matrix - after 100, the values are higher, showing more \
+robust embeddings.
 2. **Consistent embeddings**: The top neighbors for each seed are \
 themselves close (other “shame” words). It's unclear if the model has learnt \
 meaningful “shame” cluster(s), and doesn’t drift away during training, or if \
@@ -212,14 +219,14 @@ have less impact on epoch-to-epoch stability—but. Note, they may affect which 
 words appear as neighbors, but this is unclear. 
 
 Conclusion: 
-- No model configuration is better than the other. We pick:
-    - original: more available texts - Wikivir is not lemmatized, 
-    - remove stop words: cleaner, 
+- No model configuration is better than the other. This is why we pick the following configurations:
+    - original texts: more available texts - Wikivir is not lemmatized, 
+    - remove stop words: cleaner (and faster), 
     - paragraph: more semantic context, even for downstream tasks (human annotation).
 - Unclear whether the model can be a good predictor of semantically similar words \
 (therefore check ch. 3 below).
 
 #### Next steps
 Use the chosen model to annotate the corpus and evaluate the quality of annotations.
-To see the annotations, check: """)
+To see the annotations (and evaluations), check: """)
 st.page_link("pages/3_word_embeddings_annotations.py", label=":blue[_Word Embeddings Annotations_]")
